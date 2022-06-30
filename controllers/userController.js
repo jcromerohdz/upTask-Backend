@@ -23,8 +23,25 @@ const register = async(req, res) => {
 
 }
 
-const createUser  = (req, res) => {
-  res.json({msg: "Create User"})
+const authenticate = async (req, res) => {
+  const { email, password } = req.body
+
+  // Check if the user exist
+  const user = await User.findOne({email})
+  if (!user) {
+    const error = new Error("The user does not exist!")
+    return res.status(404).json({msg: error.message})
+  }
+
+  // Check for user confirmation
+  if (!user.confirmed) {
+    const error = new Error("Your user account is not confirmed!")
+    return res.status(403).json({msg: error.message})
+  }
+
+  // Check for user password 
 }
 
-export { register, createUser }
+
+
+export { register,  authenticate }

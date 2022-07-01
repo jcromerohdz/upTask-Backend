@@ -56,6 +56,19 @@ const authenticate = async (req, res) => {
 
 const confirm = async (req, res) => {
   const { token } = req.params
+  const confirmUser = await User.findOne({token})
+  if(!confirmUser){
+    const error = new Error("Ivalid Token!!!")
+    return res.status(403).json({ msg: error.message })
+  }
+  try {
+    confirmUser.confirmed = true
+    confirmUser.token = ""
+    await confirmUser.save()
+    res.json({msg: 'User confirmed correctly'})
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 export { register,  authenticate, confirm }

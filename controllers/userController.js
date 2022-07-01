@@ -1,5 +1,6 @@
 import User from "../models/User.js"
 import generateId from "../helpers/generateId.js"
+import generateJWT from "../helpers/generateJWT.js"
 
 const register = async(req, res) => {
   // Avoid duplicate registrations
@@ -40,8 +41,21 @@ const authenticate = async (req, res) => {
   }
 
   // Check for user password 
+  if(await user.checkPassword(password)){
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateJWT(user._id),
+    })
+  }else{
+    const error = new Error("Your username or password did not match!")
+    return res.status(403).json({msg: error.message})
+  }
 }
 
+const confirm = async (req, res) => {
+  const { token } = req.params
+}
 
-
-export { register,  authenticate }
+export { register,  authenticate, confirm }

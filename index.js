@@ -11,6 +11,7 @@ connectDB()
 
 // Routing
 app.use("/api/users", userRoutes)
+app.use("/api/projects", userRoutes)
 
 const PORT = process.env.PORT || 4000
 

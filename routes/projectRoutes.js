@@ -11,7 +11,7 @@ import {
 } from "../controllers/projectController.js"
 import checkAuth from "../middleware/checkAuth.js"
 
-const router = exporess.Router()
+const router = express.Router()
 
 router.get('/', checkAuth, getProjects)
 router.post('/', checkAuth, newProject)

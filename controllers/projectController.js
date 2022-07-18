@@ -1,9 +1,19 @@
+import Project from "../models/Project.js"
 
 const getProjects = async (req, res) => {
 
 }
 
 const newProject = async (req, res) => {
+  const project = new Project(req.body)
+  project.creator = req.user._id
+
+  try {
+    const saveProject = await project.save()
+    res.json(saveProject)
+  } catch (error) {
+    console.log(error)
+  }
 
 }
 

@@ -1,3 +1,4 @@
+import mongoose from "mongoose"
 import Project from "../models/Project.js"
 
 const getProjects = async (req, res) => {
@@ -16,10 +17,23 @@ const newProject = async (req, res) => {
   } catch (error) {
     console.log(error)
   }
-
 }
 
 const getProject = async (req, res) => {
+  const { id } = req.params
+
+  if(mongoose.Types.ObjectId.isValid(id)) {
+    const project = await Project.findById(id)
+    if (project.creator.toString() !== req.user._id.toString()){
+      const error = new Error("Not a valid action")
+      return res.status(404).json({msg: error.message})
+    }
+    res.json(project)
+  }else {
+    const error = new Error("Not found!")
+    return res.status(404).json({msg: error.message})
+  }
+    
 
 }
 

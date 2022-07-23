@@ -33,15 +33,59 @@ const getProject = async (req, res) => {
     const error = new Error("Not found!")
     return res.status(404).json({msg: error.message})
   }
-    
-
 }
 
 const editProject = async (req, res) => {
 
+  const { id } = req.params
+
+  if(mongoose.Types.ObjectId.isValid(id)) {
+    const project = await Project.findById(id)
+    if (project.creator.toString() !== req.user._id.toString()){
+      const error = new Error("Not a valid action")
+      return res.status(404).json({msg: error.message})
+    }
+
+    project.name = req.body.name || project.name
+    project.description = req.body.description || project.description
+    project.deliveryDate = req.body.deliveryDate || project.deliveryDate
+    project.client = req.body.client || project.client
+
+    try {
+      const saveProject = await project.save()
+      res.json(saveProject)
+    } catch (error) {
+      console.log(error)
+    }
+  }else {
+    const error = new Error("Not found!")
+    return res.status(404).json({msg: error.message})
+  }
+
+
 }
 
 const deleteProject = async (req, res) => {
+ const { id } = req.params
+
+  if(mongoose.Types.ObjectId.isValid(id)) {
+    const project = await Project.findById(id)
+    if (project.creator.toString() !== req.user._id.toString()){
+      const error = new Error("Not a valid action")
+      return res.status(404).json({msg: error.message})
+    }
+
+    try {
+      await project.deleteOne()
+      res.json({msg: "Project Deleted!"})
+    } catch (error) {
+      console.log(error)
+    }
+
+  }else {
+    const error = new Error("Not found!")
+    return res.status(404).json({msg: error.message})
+  }
 
 }
 

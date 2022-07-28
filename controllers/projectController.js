@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import Project from "../models/Project.js"
+import Task from "../models/Task.js"
 
 const getProjects = async (req, res) => {
   const projects = await Project.find().where('creator').equals(req.user)
@@ -28,7 +29,15 @@ const getProject = async (req, res) => {
       const error = new Error("Not a valid action")
       return res.status(404).json({msg: error.message})
     }
-    res.json(project)
+
+    // Get all task of the project 
+    const tasks = await Task.find().where("project").equals(project._id)
+
+    res.json({
+      project,
+      tasks
+    })
+
   }else {
     const error = new Error("Not found!")
     return res.status(404).json({msg: error.message})
@@ -98,6 +107,22 @@ const deletCollaborator = async (req, res) => {
 }
 
 const getTasks = async (req, res) => {
+  const { id } = req.params
+
+  const projectExist = await Project.findById(id)
+  
+  console.log("project", projectExist)
+
+  if(!projectExist){
+    const error = new Error("Not a valid action")
+    return res.status(404).json({msg: error.message})
+
+  }
+
+  // Who is the project owner and collaborators
+
+  const tasks = await Task.find().where('project').equals(id)
+  res.json(tasks)
 
 }
 
